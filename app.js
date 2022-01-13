@@ -20,7 +20,13 @@ const posts = [];
 
 app.get("/", (req, res) => {
 
-  res.render("home", {homeStart: homeStartingContent});
+  res.render("home", {
+    homeStart: homeStartingContent, 
+    posts: posts });
+
+  //display posts from 'compose' page
+
+
 });
 
 app.get("/about", (req, res) => {
@@ -55,7 +61,7 @@ app.post("/compose", (req, res) =>{
 
   res.redirect("/");
   // console.log("Title: " + title)
-  console.log(posts)
+  // console.log(posts)
 })
 
 app.listen(3000, function() {
