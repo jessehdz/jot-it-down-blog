@@ -15,6 +15,8 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
+const posts = [];
+
 
 app.get("/", (req, res) => {
 
@@ -41,9 +43,19 @@ app.get("/compose", (req, res) => {
 
 
 app.post("/compose", (req, res) =>{
-  const entry = req.body.entry;
+  const title = req.body.entryTitle;
+  const entry = req.body.entryBody;
 
-  console.log(entry)
+  const post = {
+     title: title,
+     body: entry
+  }
+
+  posts.push(post);
+
+  res.redirect("/");
+  // console.log("Title: " + title)
+  console.log(posts)
 })
 
 app.listen(3000, function() {
