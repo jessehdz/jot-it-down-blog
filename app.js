@@ -48,8 +48,6 @@ app.get("/compose", (req, res) => {
 
 
 
-
-
 app.post("/compose", (req, res) =>{
   const title = req.body.entryTitle;
   const entry = req.body.entryBody;
@@ -78,8 +76,14 @@ app.get('/posts/:postName', function(req, res) {
     // console.log(lowerStored, requestedTitle);
     if( requestedTitle === storedTitle){
       console.log("Match of title and route");
+
+      res.render("post", {
+        title: post.title,
+        content: post.body
+      });
+
     } else {
-      console.log("Not a match");
+      console.log("Not a match")
     }
   });
 
