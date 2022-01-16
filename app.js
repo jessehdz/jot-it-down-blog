@@ -46,22 +46,35 @@ app.get("/compose", (req, res) => {
 })
 
 
-
-
 app.post("/compose", (req, res) =>{
+  const today = new Date();
+
+  let options = {
+    weekday: 'long', 
+    day: 'numeric',
+    month: 'long'
+  }
+
+  let day = today.toLocaleDateString('en-US', options);
+
   const title = req.body.entryTitle;
   const entry = req.body.entryBody;
 
+  const postAddress = _.kebabCase(title);
+
   const post = {
+    date: day,
     title: title,
     body: entry
   }
 
   posts.push(post);
 
+
+
   res.redirect("/");
   // console.log("Title: " + title)
-  // console.log(body)
+  // console.log(postAddress)
 })
 
 //express routing
