@@ -92,7 +92,8 @@ app.get('/posts/:postName', function(req, res) {
 
       res.render("post", {
         title: post.title,
-        content: post.body
+        content: post.body,
+        date: post.date
       });
 
     } else {
