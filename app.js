@@ -4,6 +4,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const _ = require("lodash");
+const mongoose = require("mongoose");
 
 const homeStartingContent = "This looks like a good place to start!";
 const aboutContent = "Hac habitasse platea dictumst vestibulum rhoncus est pellentesque. Dictumst vestibulum rhoncus est pellentesque elit ullamcorper. Non diam phasellus vestibulum lorem sed. Platea dictumst quisque sagittis purus sit. Egestas sed sed risus pretium quam vulputate dignissim suspendisse. Mauris in aliquam sem fringilla. Semper risus in hendrerit gravida rutrum quisque non tellus orci. Amet massa vitae tortor condimentum lacinia quis vel eros. Enim ut tellus elementum sagittis vitae. Mauris ultrices eros in cursus turpis massa tincidunt dui.";
@@ -16,7 +17,29 @@ app.set('view engine', 'ejs');
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
-const posts = [];
+//mongoose server connection
+mongoose.connect("mongodb+srv://admin-jesse:<password>@cluster0.xcya1.mongodb.net/jidDB");
+
+//post schema -----------------------------------------------
+const postsSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: "Title is missing. Please add a title to continue."
+  },
+  body: String
+}); 
+
+const Post = mongoose.model("Post", postsSchema);
+
+const post0 = new Post ({
+  title: "Good Day",
+  body: "Just waking up in the morning gotta thank God I don't know but today seems kinda odd No barking from the dogs, no smog And momma cooked a breakfast with no hog I got my grub on, but didn't pig out Finally got a call from a girl want to dig out Hooked it up on later as I hit the do' Thinking will i live another twenty fo' I gotta go cause I got me a drop top."
+});
+
+const firstPost = [post0];
+
+
+// const posts = [];
 
 
 app.get("/", (req, res) => {
