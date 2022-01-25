@@ -18,7 +18,7 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.use(express.static("public"));
 
 //mongoose server connection
-mongoose.connect("mongodb+srv://admin-jesse:<password>@cluster0.xcya1.mongodb.net/jidDB");
+mongoose.connect("mongodb+srv://admin-jesse:Test123@cluster0.xcya1.mongodb.net/jidDB");
 
 //post schema -----------------------------------------------
 const postsSchema = new mongoose.Schema({
@@ -26,7 +26,8 @@ const postsSchema = new mongoose.Schema({
     type: String,
     required: "Title is missing. Please add a title to continue."
   },
-  body: String
+  body: String,
+  date: String
 }); 
 
 const Post = mongoose.model("Post", postsSchema);
@@ -38,15 +39,33 @@ const post0 = new Post ({
 
 const firstPost = [post0];
 
+// post0.save();
 
-// const posts = [];
-
+//home page -----------------------------------------------------------
 
 app.get("/", (req, res) => {
 
-  res.render("home", {
-    homeStart: homeStartingContent, 
-    posts: posts });
+  Post.find({}, function(err, results){
+    
+    if(results.length === 0) {
+      Post.insertMany(post0, function(err, post) {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log("Succesfully added initial post to DB.")
+        }
+      });
+      
+    } else {
+      res.render("home", {
+        homeStart: homeStartingContent, 
+        posts: results });
+      
+    }
+
+  });
+
+  
 
   //display posts from 'compose' page
 
@@ -70,6 +89,8 @@ app.get("/compose", (req, res) => {
 
 
 app.post("/compose", (req, res) =>{
+  
+  //date configuration
   const today = new Date();
 
   let options = {
@@ -83,21 +104,20 @@ app.post("/compose", (req, res) =>{
   const title = req.body.entryTitle;
   const entry = req.body.entryBody;
 
-  const postAddress = _.kebabCase(title);
-
-  const post = {
+  //creates new document in DB
+  const newPost = new Post ({
     date: day,
     title: title,
     body: entry
-  }
+  });
 
-  posts.push(post);
+  const postAddress = _.kebabCase(title);
 
-
+  newPost.save();
 
   res.redirect("/");
-  // console.log("Title: " + title)
-  // console.log(postAddress)
+  console.log("Title: " + title)
+  console.log(postAddress)
 })
 
 //express routing
