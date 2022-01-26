@@ -42,8 +42,19 @@ const firstPost = [post0];
 // post0.save();
 
 //home page -----------------------------------------------------------
+//date configuration
+const today = new Date();
+
+let options = {
+  weekday: 'long', 
+  day: 'numeric',
+  month: 'long'
+}
+
+let day = today.toLocaleDateString('en-US', options);
 
 app.get("/", (req, res) => {
+
 
   Post.find({}, function(err, results){
     
@@ -65,11 +76,6 @@ app.get("/", (req, res) => {
 
   });
 
-  
-
-  //display posts from 'compose' page
-
-
 });
 
 app.get("/about", (req, res) => {
@@ -90,62 +96,46 @@ app.get("/compose", (req, res) => {
 
 app.post("/compose", (req, res) =>{
   
-  //date configuration
-  const today = new Date();
-
-  let options = {
-    weekday: 'long', 
-    day: 'numeric',
-    month: 'long'
-  }
-
-  let day = today.toLocaleDateString('en-US', options);
-
-  const title = req.body.entryTitle;
-  const entry = req.body.entryBody;
 
   //creates new document in DB
   const newPost = new Post ({
     date: day,
-    title: title,
-    body: entry
+    title: req.body.entryTitle,
+    body: req.body.entryBody
   });
 
-  const postAddress = _.kebabCase(title);
+  // const postAddress = _.kebabCase(newPost.title);
 
-  newPost.save();
-
-  res.redirect("/");
-  console.log("Title: " + title)
-  console.log(postAddress)
-})
-
-//express routing
-app.get('/posts/:postName', function(req, res) {
-  
-  const requestedTitle = _.lowerCase(req.params.postName);
-  // let postName = posts[0].title;
-
-  posts.forEach(function(post){
-    const storedTitle = _.lowerCase(post.title);
-
-    // console.log(lowerStored, requestedTitle);
-    if( requestedTitle === storedTitle){
-      console.log("Match of title and route");
-
-      res.render("post", {
-        title: post.title,
-        content: post.body,
-        date: post.date
-      });
-
-    } else {
-      console.log("Not a match")
+  newPost.save(function (err){
+    if(!err){
+      res.redirect("/");
     }
   });
 
-  // console.log(postName);
-  
+})
+
+//express routing
+app.get('/posts/:postID', function(req, res) {
+  //URL request ID -- "Read More..."
+  const requestedID = req.params.postID;
+
+  console.log("Requested ID: " + requestedID);
+
+  Post.findById({_id: requestedID}, function(err, foundPost){
+    if(!foundPost) {
+      console.log(err);
+    } else {
+      res.render("post", {
+        date: foundPost.date,
+        title: foundPost.title,
+        body: foundPost.body
+      });
+
+      // res.redirect("/" + _.kebabCase(requestedTitle))
+      console.log("Posting: " + foundPost.title);
+    }
+
+  })
   
 })
 
